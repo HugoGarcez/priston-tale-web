@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Priston Tale</title>
+<style>
+	:root { --bg: #0b0b10; --fg: #d8d4c8; --dim: #807a6c; --panel: #15151c; }
+	html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); font: 13px/1.4 system-ui, sans-serif; }
+	#wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px; }
+	#canvas { background: #000; display: block; max-width: 100%; height: auto; outline: none; }
+	#status { color: var(--dim); min-height: 1.4em; }
+	#bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; width: min(1024px, 100%); }
+	#bar button { background: var(--panel); color: var(--fg); border: 1px solid #34323c; border-radius: 4px;
+	              padding: 4px 10px; font: inherit; cursor: pointer; }
+	#bar button:hover { border-color: #5a5566; }
+	#bar #saveInfo { color: var(--dim); margin-left: auto; }
+	#log { width: min(1024px, 100%); height: 160px; overflow: auto; background: var(--panel); color: var(--dim);
+	       font: 11px/1.35 ui-monospace, Consolas, monospace; white-space: pre-wrap; padding: 6px 8px; box-sizing: border-box; }
+</style>
+</head>
+<body>
+<div id="wrap">
+	<canvas id="canvas" width="1024" height="768" tabindex="0" oncontextmenu="event.preventDefault()"></canvas>
+	<div id="bar">
+		<div id="status">Loading...</div>
+		<span id="saveInfo" title="Characters and accounts are kept in this browser"></span>
+		<button id="btnExport" title="Download a backup of your characters and accounts">Export saves</button>
+		<button id="btnImport" title="Replace the saves in this browser with a backup">Import saves</button>
+		<input id="fileImport" type="file" accept=".ptsave" hidden>
+	</div>
+	<div id="log"></div>
+</div>
+<script src="config.js"></script>
+<script>
+	var logEl = document.getElementById('log');
+	function addLog(text) {
+		logEl.textContent += text + '\n';
+		if (logEl.textContent.length > 200000) logEl.textContent = logEl.textContent.slice(-100000);
+		logEl.scrollTop = logEl.scrollHeight;
+	}
+	var Module = {
+		ptServerUrl: (window.PT_CONFIG && PT_CONFIG.serverUrl) || '',	// config.js: shared server.exe
+		canvas: document.getElementById('canvas'),
+		print: function (t) { console.log(t); addLog(t); },
+		printErr: function (t) { console.warn(t); addLog(t); },
+		setStatus: function (t) { document.getElementById('status').textContent = t || 'Running'; },
+		totalDependencies: 0,
+		monitorRunDependencies: function (left) {
+			this.totalDependencies = Math.max(this.totalDependencies, left);
+			Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : '');
+		}
+	};
+	document.getElementById('canvas').addEventListener('click', function () { this.focus(); });
+
+	// Saves (web\pre.js keeps them in IndexedDB): backup file out and in
+	var saveInfo = document.getElementById('saveInfo');
+	if (Module.ptServerUrl) {			// shared server: characters live on the server, not in this browser
+		document.getElementById('btnExport').hidden = document.getElementById('btnImport').hidden = true;
+	}
+	Module.ptSaveDone = function () { saveInfo.textContent = 'Saved ' + new Date().toLocaleTimeString(); };
+	document.getElementById('btnExport').addEventListener('click', function () {
+		if (!Module.ptSaves) return;
+		saveInfo.textContent = 'Exporting...';
+		(Module.ptFlushSaves ? Module.ptFlushSaves() : Promise.resolve())
+			.then(function () { return Module.ptSaves.all(); })
+			.then(function (entries) {
+				var blob = new Blob([Module.ptSaves.pack(entries)], { type: 'application/octet-stream' });
+				var a = document.createElement('a');
+				a.href = URL.createObjectURL(blob);
+				a.download = 'pristontale-saves-' + new Date().toISOString().slice(0, 10) + '.ptsave';
+				document.body.appendChild(a); a.click(); a.remove();
+				setTimeout(function () { URL.revokeObjectURL(a.href); }, 10000);
+				saveInfo.textContent = 'Exported ' + entries.length + ' file(s)';
+			})
+			.catch(function (e) { saveInfo.textContent = 'Export failed: ' + e; });
+	});
+	var fileImport = document.getElementById('fileImport');
+	document.getElementById('btnImport').addEventListener('click', function () { fileImport.click(); });
+	fileImport.addEventListener('change', function () {
+		var f = fileImport.files[0];
+		fileImport.value = '';
+		if (!f || !Module.ptSaves) return;
+		f.arrayBuffer().then(function (buf) {
+			var entries = Module.ptSaves.unpack(new Uint8Array(buf));
+			if (!confirm('Replace the saves in this browser with "' + f.name + '" (' + entries.length +
+			             ' files)?\nThe game restarts; progress since your last export is lost.')) return;
+			if (Module.ptServerWorker) Module.ptServerWorker.terminate();		// nothing writes over the import
+			return Module.ptSaves.write(entries, true).then(function () { location.reload(); });
+		}).catch(function (e) { saveInfo.textContent = 'Import failed: ' + (e.message || e); });
+	});
+	window.onerror = function (msg) { Module.setStatus('Error: ' + msg); };
+</script>
+<script src="progress.js"></script>
+<script>
+
+	// Game files are kept in the browser by the service worker (sw.js): game.js is
+	// started once it handles this page, so even the first visit's downloads are
+	// stored. (A <template>'s script does not run; emcc needs the placeholder.)
+	(function () {
+		var started = false;
+		function load() {
+			var s = document.createElement('script');
+			s.src = document.getElementById('gameScript').content.querySelector('script').getAttribute('src');
+			document.body.appendChild(s);
+		}
+		function start() {
+			if (started) return;
+			started = true;
+			if (document.readyState == 'loading') document.addEventListener('DOMContentLoaded', load);	// template below
+			else load();
+		}
+		var sw = navigator.serviceWorker;
+		if (!sw) return start();				// old browser or private window: downloads as before
+		if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {});
+		if (sw.controller) { start(); sw.register('sw.js').catch(function () {}); return; }
+		sw.addEventListener('controllerchange', start);
+		sw.register('sw.js').then(function () { return sw.ready; }).then(function () {
+			setTimeout(start, sw.controller ? 0 : 1000);	// Shift+Reload: the page stays unhandled
+		}, start);
+		setTimeout(start, 5000);
+	})();
+</script>
+<template id="gameScript">{{{ SCRIPT }}}</template>
+</body>
+</html>

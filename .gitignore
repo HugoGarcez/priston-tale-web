@@ -1,0 +1,45 @@
+# Priston Tale in the browser - what stays out of git.
+# The repo holds the code and the website files; game data, builds and anything
+# from the running server live only on the server (or in the download archive).
+
+# --- game data (GBs; shipped separately) ---
+/data/
+/data_startup.pack
+/data_manifest.txt
+/[[]project]/game/
+/[[]project]/dist/
+
+# --- accounts, characters, logs, crash dumps (private player data) ---
+DataServer/
+LogFile/
+*.log
+*.dmp
+missing_models.txt
+
+# --- toolchains and downloads (reinstall instead) ---
+/[[]project]/emsdk/
+/[[]project]/src/thirdparty/mingw/
+/[[]project]/src/thirdparty/dl/
+
+# --- build output ---
+/[[]project]/src/bin/
+/[[]project]/src/build/
+/[[]project]/src/web/obj/
+/[[]project]/src/web/out/
+*.obj
+*.pdb
+*.ilk
+*.ipch
+*.iobj
+*.ipdb
+*.tlog
+*.exp
+.vs/
+x64/
+Debug/
+Release/
+
+# --- archives ---
+*.rar
+*.zip
+*.7z

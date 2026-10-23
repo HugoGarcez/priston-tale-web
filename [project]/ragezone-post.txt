@@ -1,0 +1,142 @@
+[CENTER][SIZE=7][B]Priston Tale in the Browser[/B][/SIZE]
+[SIZE=4]Host your own Priston Tale world and play it straight from a web page[/SIZE]
+[SIZE=3]Windows + IIS only. No SQL, no database, no client install for players.[/SIZE][/CENTER]
+
+[HR][/HR]
+
+[SIZE=5][B]What is this?[/B][/SIZE]
+The full Priston Tale client compiled to WebAssembly (Emscripten), plus a Windows [ICODE]server.exe[/ICODE]. Players open a web page and play: the game runs in their browser, the world runs on your PC.
+
+[B]How the pieces fit:[/B]
+[CODE]Player's browser  <== https / wss ==>  IIS website (ws.ashx bridge)  <== TCP 127.0.0.1:10007 ==>  server.exe[/CODE]
+[LIST]
+[*][B]Browser[/B]: Chrome, Edge or Firefox. The whole game client runs here.
+[*][B]IIS website[/B]: serves the game files; [ICODE]ws.ashx[/ICODE] passes the network traffic through to the server.
+[*][B]server.exe[/B]: the game world. Accounts and characters are plain files, no database.
+[/LIST]
+
+[B]Features[/B]
+[LIST]
+[*]Everyone on one shared server, through any browser
+[*]First login to an ID creates the account (no registration page needed)
+[*]Players' browsers cache the game files: after the first visit (~90 MB) they only download files that changed
+[*]Game files load on demand while playing; the full data set (3.7 GB) is never downloaded at once
+[/LIST]
+
+[SIZE=5][B]Downloads[/B][/SIZE]
+[LIST]
+[*][B]Server package[/B] (ready to host, site + server): [URL=PUT-LINK-HERE]download[/URL]
+[*][B]Source[/B] (client, server, web port, build scripts): [URL=PUT-LINK-HERE]download[/URL]
+[/LIST]
+
+[HR][/HR]
+
+[SIZE=5][B]What you need[/B][/SIZE]
+[LIST]
+[*][B]Windows 10, 11 or Server[/B]: the PC that stays on while people play
+[*][B]About 8 GB of disk[/B]: 3.7 GB game data for the website, 3.2 GB for the server
+[*][B]A domain name[/B]: only for friends playing from other places (a free dynamic-DNS name works)
+[*][B]The package[/B]: the [ICODE]dist[/ICODE] folder with [ICODE]site[/ICODE], [ICODE]server[/ICODE] and [ICODE]README.txt[/ICODE]
+[/LIST]
+[COLOR=rgb(65, 168, 95)][B]Not needed:[/B][/COLOR] SQL Server, MySQL, PHP, Node or anything else.
+
+[SIZE=5][B]What's in the package[/B][/SIZE]
+[CODE]dist\
+├─ site\            the website: goes into the IIS folder
+│  ├─ index.html, game.js, game.wasm, sw.js, config.js
+│  ├─ data_startup.pack, data_manifest.txt
+│  ├─ ws.ashx, web.config      the bridge and IIS settings
+│  └─ data\          3.7 GB of game files (has its own web.config)
+├─ server\          the game world: goes anywhere on the same PC
+│  ├─ server.exe, SDL2.dll, server.ini
+│  └─ install_autostart.ps1   optional, step 6
+└─ README.txt[/CODE]
+
+[HR][/HR]
+
+[SIZE=6][B]Setup[/B][/SIZE]
+
+[SIZE=5][B]Step 1: Turn on IIS[/B][/SIZE]
+IIS comes with Windows; it just needs switching on. Right-click Start, open [B]Windows PowerShell (Admin)[/B] or [B]Terminal (Admin)[/B], and paste:
+[CODE]Enable-WindowsOptionalFeature -Online -All -FeatureName IIS-WebServerRole,IIS-WebServer,IIS-StaticContent,IIS-DefaultDocument,IIS-WebSockets,IIS-ASPNET45,IIS-NetFxExtensibility45,IIS-ISAPIExtensions,IIS-ISAPIFilter,IIS-ManagementConsole[/CODE]
+Prefer clicking? [I]Turn Windows features on or off[/I] > [I]Internet Information Services[/I] > [I]World Wide Web Services[/I] > [I]Application Development Features[/I]: tick [B]WebSocket Protocol[/B] and [B]ASP.NET 4.8[/B] (on some versions 4.7 or 4.6). Also tick [I]Web Management Tools[/I] > [B]IIS Management Console[/B].
+
+[COLOR=rgb(226, 80, 65)][B]Don't skip WebSocket Protocol.[/B][/COLOR] Without it the game loads fine, but every login says it can't reach the server.
+
+[SIZE=5][B]Step 2: Copy the website[/B][/SIZE]
+[LIST=1]
+[*]Make a folder, for example [ICODE]C:\inetpub\priston[/ICODE].
+[*]Copy [B]everything inside[/B] [ICODE]dist\site\[/ICODE] into it, including both [ICODE]web.config[/ICODE] files and the [ICODE]data[/ICODE] folder. Copy the contents, not the [ICODE]site[/ICODE] folder itself, so [ICODE]index.html[/ICODE] sits directly in [ICODE]C:\inetpub\priston[/ICODE].
+[*]Open [B]IIS Manager[/B] (search the Start menu for "IIS"). Open [I]Sites[/I], click [I]Default Web Site[/I], then [I]Basic Settings...[/I] on the right, and set [B]Physical path[/B] to your folder.
+[/LIST]
+The application pool's default settings (.NET CLR v4.0, Integrated) are correct, so leave them alone.
+
+[QUOTE]Using a folder outside [ICODE]C:\inetpub[/ICODE]? Right-click it > Properties > Security and give [B]IIS_IUSRS[/B] Read access, or IIS can't serve the files.[/QUOTE]
+
+[SIZE=5][B]Step 3: Start the game server[/B][/SIZE]
+[LIST=1]
+[*]Copy the [ICODE]dist\server\[/ICODE] folder somewhere simple, for example [ICODE]C:\PristonServer[/ICODE].
+[*]Double-click [B]server.exe[/B] and leave its window open. Closing the window shuts the world down and saves everyone.
+[*]Give it [B]1-2 minutes[/B] to load the world before anyone logs in.
+[/LIST]
+Port 10007 is only used inside your PC, between IIS and server.exe. [B]Don't[/B] open it in your firewall or router.
+
+[SIZE=5][B]Step 4: Test it on the server PC[/B][/SIZE]
+On the same PC, open [ICODE]http://localhost/[/ICODE]. The first visit downloads about 90 MB, then the intro plays and the login screen appears.
+
+[B]Logging in:[/B] type any ID and password. The first login to a new ID creates the account with that password; later logins must use the same password.
+
+[QUOTE]This works without HTTPS only because it's localhost. For any other PC, do step 5.[/QUOTE]
+
+[SIZE=5][B]Step 5: Open it to friends (HTTPS)[/B][/SIZE]
+Browsers only run the game's threads on secure pages, so friends need an [ICODE]https://[/ICODE] address. It's free:
+[LIST=1]
+[*][B]Get a name[/B] that points at your internet connection: your own domain, or a free dynamic-DNS name.
+[*][B]Forward ports 80 and 443[/B] on your router to this PC. Port 80 is only needed for getting the certificate.
+[*]In IIS Manager > [I]Default Web Site[/I] > [I]Bindings...[/I], edit the [B]http[/B] binding and set [B]Host name[/B] to your name, for example [ICODE]play.example.com[/ICODE].
+[*]Download [URL=https://www.win-acme.com]win-acme[/URL], unzip it, run [ICODE]wacs.exe[/ICODE] as Administrator, choose [B]N: Create certificate (default settings)[/B], then pick your site. It adds the https binding and renews the certificate by itself.
+[/LIST]
+Friends can now play at [ICODE]https://play.example.com/[/ICODE].
+
+[SIZE=5][B]Step 6 (optional): Keep the server running[/B][/SIZE]
+To have server.exe start with Windows (no sign-in needed) and restart within 5 minutes if it stops, run this once in an admin PowerShell from the server folder:
+[CODE]powershell -ExecutionPolicy Bypass -File .\install_autostart.ps1[/CODE]
+It then runs in the background without a window. The script's first lines explain how to stop, start or remove it.
+
+[HR][/HR]
+
+[SIZE=5][B]Running your world[/B][/SIZE]
+[LIST]
+[*][B]Back up[/B] [ICODE]C:\PristonServer\DataServer[/ICODE] now and then. It holds every account and character.
+[*][B]Forgotten password:[/B] delete [ICODE]DataServer\password\<ID>.pw[/ICODE]. The next login sets a new one.
+[*][B]Rates and settings:[/B] edit [ICODE]server.ini[/ICODE] (experience and drop rates are listed at the bottom), then restart server.exe.
+[*][B]Players' browsers cache the game files.[/B] If you replace files in the website's [ICODE]data[/ICODE] folder yourself, rebuild the file list, or players keep their old copies:
+[CODE]python src\web\make_manifest.py C:\inetpub\priston\data C:\inetpub\priston\data_manifest.txt[/CODE]
+[/LIST]
+
+[SIZE=5][B]If something goes wrong[/B][/SIZE]
+Add [ICODE]?debugnet[/ICODE] to the address ([ICODE]https://play.example.com/?debugnet[/ICODE]). The log box under the game then shows every connection attempt.
+
+[TABLE]
+[TR][TH]What you see[/TH][TH]What to do[/TH][/TR]
+[TR][TD]Login says it can't connect to the server[/TD][TD]Is server.exe running, and has it had 2 minutes to load? Is the [B]WebSocket Protocol[/B] feature on (step 1)? Run [ICODE]iisreset[/ICODE] in an admin PowerShell after turning it on.[/TD][/TR]
+[TR][TD]Page stays black or shows a SharedArrayBuffer error[/TD][TD]You're on http:// from another PC. Use the https:// address (step 5), or http://localhost/ on the server PC.[/TD][/TR]
+[TR][TD]/ws.ashx shows 404 or 500 instead of "Bad Request"[/TD][TD]ASP.NET 4.8 isn't installed (step 1), or the app pool isn't .NET v4.0. "Bad Request" is the normal answer to a plain visit.[/TD][/TR]
+[TR][TD]Game data fails to load (404s in the F12 console)[/TD][TD]The data folder or its web.config wasn't copied. Copy the whole of dist\site\ again.[/TD][/TR]
+[TR][TD]"Please re-enter your password"[/TD][TD]That ID already exists with a different password. Use the right one, or reset it (see above).[/TD][/TR]
+[TR][TD]Changed game files don't show up for players[/TD][TD]Rebuild data_manifest.txt (see "Running your world").[/TD][/TR]
+[/TABLE]
+
+[HR][/HR]
+
+[SPOILER="Building from source"]
+[LIST]
+[*][ICODE]src\[/ICODE]: game client and server source (Visual Studio), plus [ICODE]src\web\[/ICODE] for the browser port (Emscripten).
+[*]Server: in [ICODE]src\[/ICODE], [ICODE]build.bat Release GL[/ICODE] builds [ICODE]src\bin\ReleaseGL\server.exe[/ICODE].
+[*]Browser client: install emsdk, then [ICODE]python src\web\build_web.py --release[/ICODE] builds [ICODE]game.js[/ICODE] / [ICODE]game.wasm[/ICODE] into [ICODE]src\web\out\[/ICODE].
+[*]Package: [ICODE]python src\web\make_site.py[/ICODE] makes the [ICODE]dist\[/ICODE] folder (site, server, README) with the data file list and its hashes.
+[*]Test locally without IIS: [ICODE]python src\web\serve.py 8080 dist\site[/ICODE], then open http://localhost:8080/ (includes the same WebSocket bridge as ws.ashx).
+[/LIST]
+[/SPOILER]
+
+[CENTER][SIZE=2]No database required · IIS bridge ws.ashx · game server port 10007[/SIZE][/CENTER]

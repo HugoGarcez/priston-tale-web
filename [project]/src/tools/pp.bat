@@ -1,0 +1,4 @@
+@echo off
+call "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars32.bat" >nul 2>nul
+cd /d "X:\Projects\Pristontale Source\Claude"
+cl /nologo /E /I. /IsmLib3d /Isinbaram /IHoBaram /IHoBaram\NewEffect\HoEffect\Script /FIcompat.h /source-charset:utf-8 /execution-charset:.949 /DWIN32 /D_WINDOWS /D_CRT_SECURE_NO_WARNINGS /D_CRT_NON_CONFORMING_SWPRINTFS /D_WINSOCK_DEPRECATED_NO_WARNINGS /D_USE_32BIT_TIME_T /DDIRECTINPUT_VERSION=0x0700 /DDIRECT3D_VERSION=0x0600 /DDIRECTDRAW_VERSION=0x0600 /DNDEBUG /D_MBCS Winmain.cpp > "X:\Projects\Pristontale Source\Claude\tools\winmain_pp.txt" 2>"X:\Projects\Pristontale Source\Claude\tools\winmain_pp_err.txt"
