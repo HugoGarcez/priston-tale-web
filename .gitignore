@@ -1,13 +1,13 @@
 # Priston Tale in the browser - what stays out of git.
-# The repo holds the code and the website files; game data, builds and anything
-# from the running server live only on the server (or in the download archive).
+# The repo holds everything needed to run it: code, website, game data (data\) and
+# the game server ([project]\dist\server). Left out: players' accounts and logs,
+# builds, toolchains, and copies of what is already here.
 
-# --- game data (GBs; shipped separately) ---
-/data/
-/data_startup.pack
-/data_manifest.txt
+# --- copies / originals (the site and server above are the copies in use) ---
 /[[]project]/game/
-/[[]project]/dist/
+/[[]project]/dist/site/
+/[[]project]/dist/server/backup/
+/[[]project]/dist/server/server.exe.dmp
 
 # --- accounts, characters, logs, crash dumps (private player data) ---
 DataServer/
