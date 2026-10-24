@@ -1,0 +1,18 @@
+1 Round         %d:%d        Bonus + %d
+2 Round         %d:%d        Bonus + %d
+3 Round         %d:%d        Bonus + %d
+4 Round         %d:%d        Bonus + %d
+5 Round         %d:%d        Bonus + %d
+-------------------------------------------
+TOTAL           %d:%d            CLEAR!
+-------------------------------------------
+<SCORE>
+%s                   : %d
+%s                   : %d
+%s                   : %d
+TOTAL                : %d
+
+
+
+
+
