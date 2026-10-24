@@ -1,0 +1,8 @@
+//npc_Hobsanta.npc
+
+*E_NAME 	"Santa Goblin"
+
+*E_CHAT		"Why you hang around alone such good time on Christmas!"               
+*E_CHAT		"It's up to me giving you presents or not!"             
+*E_CHAT		"Look at the Rudolph's nose...no more shines."
+                

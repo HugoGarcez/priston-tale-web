@@ -1,0 +1,8 @@
+//Barba.npc
+
+*E_NAME		"Barba"
+
+*E_CHAT		"There's a way to protect your equipment in this chaotic time." 
+*E_CHAT		"Imprinting on your equipment will decrease the risk of losing them."
+*E_CHAT		"If you want to remove the imprint, you'll need a Brush of Oblivion."
+*E_CHAT		"Imprinted items cannot be moved from your inventory to other's."

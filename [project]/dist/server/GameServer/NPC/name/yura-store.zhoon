@@ -1,0 +1,8 @@
+//yura-store.npc
+
+*E_NAME			"Lauren store"
+
+*E_CHAT			"Having enough potions before        hunting is standard preparation."
+*E_CHAT			"We are a little far from a big town but we have everything you need."
+*E_CHAT			"It's so cold today, you may rest    here for a while and before leaving."
+*E_CHAT			"Potions can freeze in cold weather, but they're just as effective."

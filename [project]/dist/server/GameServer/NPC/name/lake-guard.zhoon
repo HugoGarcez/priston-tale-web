@@ -1,0 +1,7 @@
+//laki_guard.npc
+
+*E_NAME		"Lake Guard"
+
+*E_CHAT		"This area is open for the warriors  who are approved by the kingdom.    Stay back it's very dangerous."
+*E_CHAT		"Warriors at level 70 may pass here."
+*E_CHAT		"We prohibit this area because there are very dangerous monsters."

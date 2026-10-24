@@ -1,0 +1,8 @@
+//T_Messenger.npc
+
+*E_NAME		"Messenger Ian"
+
+*E_CHAT		"How are you? I'm Ian, the messenger of Temskron." 
+*E_CHAT		"I deliver urgent messages all over the continent."
+*E_CHAT		"Currently, all the kingdoms in Priston are under suppressing monsters."
+*E_CHAT		"There are many powerful monsters out of the village, so be careful."

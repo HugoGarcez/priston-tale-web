@@ -1,0 +1,37 @@
+//몬스터 출현 비율
+//고대 병기
+
+*최대동시출현수		200
+//출현간격 범위 9-1 1차이당 2배씩 빨라짐
+*출현간격		1	60
+*출현수			1					
+
+//		몬스터 이름          출현빈도
+//This is for boss madness in Bless Castle
+
+//Valento
+*출연자		"발렌토"		20
+
+//Kelvezu
+*출연자		"켈베쥬"		20
+
+//Mokova
+*출연자		"모코바"		18
+
+//Devil Shy
+*출연자		"데빌 샤이"		15
+
+//Tulla
+*출연자		"툴라"			15
+
+//Draxos
+*출연자		"드락소스"		10
+
+//Greedy
+*출연자		"그리디"		10
+
+//Midranda
+*출연자		"미드란다"		7
+
+//Ouroboros
+*출연자		"Ouroboros"		1

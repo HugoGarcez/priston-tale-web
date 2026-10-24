@@ -1,0 +1,7 @@
+//salon.npc
+
+*E_NAME		"Craftman Salon"
+
+*E_CHAT		"You need a recipe and three types ofrune to make an item."
+*E_CHAT		"Please check on item mixture recipe before you make one as the produced item depends on the rune used to    make an item."
+*E_CHAT		"I am the only person in the Priston continent who can make any item you wish to make. 

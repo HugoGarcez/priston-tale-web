@@ -1,0 +1,14 @@
+
+
+*모델크기		1
+*속성			NPC
+*모양파일		"char\monster\Midranda\Midranda.INI"
+
+*효과음			"Captured Midranda"
+*이름			"Captured Midranda"
+
+*크기			대형
+
+
+
+*연결파일 "name\Captured-Midranda.zhoon"

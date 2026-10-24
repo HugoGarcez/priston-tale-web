@@ -1,0 +1,33 @@
+
+*속성			NPC
+*모양파일		"char\npc\eventmolly\eventmolly.iNI"
+*레벨			100
+
+*이름			"Molly's Disguises"
+*Name			"Molly's Disguises"
+
+
+
+//Weapon (Male Costume)
+*무기판매 da132 da232 da136 da236 da140 da240 da144 da244 da149 da249 da151 da251 da154 da254 da156 da256 da158 da258 da160 da260 da164 da264 da148 da248      
+
+ 
+
+//Armor (Female Costume)
+*방어구판매 da134 da234 da138 da238 da142 da242 da146 da246 da150 da250 da152 da252 da155 da255 da157 da257 da159 da259 da161 da261 da165 da265 da148 da248
+          
+
+
+
+
+*연결파일	"name\MollyDisguises.zhoon"
+
+
+
+
+
+
+
+
+
+

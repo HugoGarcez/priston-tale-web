@@ -1,0 +1,22 @@
+*모델크기		2
+*속성			NPC
+*모양파일		"char\monster\hopy\hopy.INI"
+
+
+*이름			"Hopy Costumes"
+*Name		"Hopy Costumes"
+
+
+
+//판매 무기류, 방어구, 잡화 류가 판매됨,
+
+*무기판매	없음
+
+*방어구판매	없음
+
+*잡화판매	CA547 CA647
+
+*연결파일 "name\event-costume-hopy.zhoon"
+
+
+//물약

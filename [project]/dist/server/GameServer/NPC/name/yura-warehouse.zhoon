@@ -1,0 +1,8 @@
+//yura-warehouse.npc
+
+*E_NAME		"Eura Warehouse Keeper"
+
+*E_CHAT		"I am worried about storing items.   They may be frozen by this weather!"
+*E_CHAT         "Well, here is your stuff."
+*E_CHAT         "You come this far, are you famous   warrior in the continent?"
+*E_CHAT         "It's even colder to the north. Are  you going there now?"

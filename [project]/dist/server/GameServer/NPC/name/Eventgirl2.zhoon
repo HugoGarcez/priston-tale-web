@@ -1,0 +1,9 @@
+//Eventgirl2.npc
+
+*E_NAME		" Event Girl "
+
+
+*E_CHAT		"If you tell me the cheering phrase, I will give you an item."
+*E_CHAT		"You can get a 'Victory Capsule' from distribution NPC."
+*E_CHAT		"Wish you best of luck"
+*E_CHAT         "Way to go"

@@ -1,0 +1,7 @@
+//Nadia.npc
+
+*E_NAME			"Nadia"
+
+*E_CHAT                 "Please, bring a mixed item to me."
+*E_CHAT                 "Let me exchange an unmixed item to random."
+*E_CHAT                 "If grandpa Morald knows, he would be disappointed."

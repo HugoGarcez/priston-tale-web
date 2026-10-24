@@ -1,0 +1,19 @@
+*E_NAME		"Casa"
+
+//불의사제 인사말 -- 항상 나오는 메시지
+*E_CHAT			"For future, the force of fire and   bravery be with you..."						1
+//운영권 가진 클랜말
+*E_CHAT			"The Tower of Tribulation, Bellatra is managed by Clan 'XXX'"					2
+
+//벨라트라가 현재 진행 중 이거나 참가가 불가능할 때 - 아래 대화들중 랜덤하게출력
+*E_CHAT			"You're late! Bellatra has begun."						3
+*E_CHAT			"Which team is going to win?"					4
+*E_CHAT			"You look very strong too."									5
+
+//입장 불가능 시간 - 아래 대화들중 랜덤하게출력
+*E_CHAT			"Sorry, You cannot join in Bellatra  right now."					3
+*E_CHAT			"Rewards are handed and the stadium  is cleaned and under maintenance at this time of day."					4
+*E_CHAT			"Please come back later."							5
+
+//벨라트라 입장이 불가능한 레벨일떄
+*E_CHAT			"It seems to be early for you to get into Bellatra. You need more exp."

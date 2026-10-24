@@ -1,0 +1,43 @@
+Notes for testing the shared server on the real machine (2026-10-23)
+====================================================================
+
+Set up as in README.txt: site\ into the IIS site (HTTPS binding with a real
+certificate), server\ anywhere, run server.exe.
+
+What was verified on the build PC
+- Every struct sent between game and server has the same layout in the browser
+  build (wasm32) and in the Windows server.exe (tools\compare_layouts.py), so a
+  browser client can talk to a Windows server.exe.
+- server.exe from server\ starts and listens on port 10007. It loads the world in
+  the background: for a minute or two after start the port can go away again and
+  come back. Wait ~2 minutes after starting it before logging in.
+- In shared mode the page skips its in-browser server and connects to
+  ws.ashx?port=10007 (seen in the bridge's log).
+- ws.ashx compiles with the .NET Framework C# compiler (the same C# 5 IIS uses).
+- The test server (web\serve.py) speaks the same bridge protocol, and a raw client
+  got server.exe's first packet through it.
+
+NOT verified yet (that is what this test is for)
+- Logging in end to end through the bridge with a browser. On the build PC every
+  browser WebSocket to a local server failed (even a minimal test server, and an
+  unencrypted ws:// to a public echo server), while wss:// to a public server
+  worked - security software on that PC breaks unencrypted WebSockets. On the real
+  site everything is https:// / wss:// with a real certificate.
+- ws.ashx actually running under IIS.
+- Two players seeing each other; *OFFLINE_PASSWORDS (first login sets the
+  password, a wrong one shows "Please re-enter your password").
+
+Where to look when something fails
+- https://site/ws.ashx in a browser: should print "Priston Tale game server bridge:
+  WebSocket connections only." Otherwise ASP.NET 4.8 / app pool problem.
+- https://site/?debugnet logs every connection, message and close in the log box
+  under the game ("[ptwin] net: -> connect ...", "<- accepted/refused/data").
+  "[web] cannot reach the game server (wss://.../ws.ashx?port=10007)" means the
+  WebSocket did not open: WebSocket Protocol feature missing, server.exe not
+  listening yet, or the port not in web.config PristonGamePorts.
+- F12 > Network > filter "ws.ashx": status 101 = bridge OK; 403 = port not allowed;
+  500 = handler error (IIS logs / Event Viewer > Application for ASP.NET).
+- server\LogFile\ has server.exe's own logs.
+
+Source and build scripts stay on the build PC (PristonWeb\src); fixes are built
+there and make_site.py is run again.

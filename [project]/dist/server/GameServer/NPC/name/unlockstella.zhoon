@@ -1,0 +1,6 @@
+//unlockstella.npc
+
+*E_NAME		"Stella"
+
+*E_CHAT		"You brought Kahn's treasure that I was looking for"
+*E_CHAT		"It can be mixed with a mysterious key, so this can open the box."

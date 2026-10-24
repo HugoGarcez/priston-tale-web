@@ -1,0 +1,8 @@
+//yura-guard.npc
+
+*E_NAME		"Eura Guard"
+
+*E_CHAT		"Due to heavy snow, you can not go   further. I have orders to restrict  entry into the area."
+*E_CHAT		"You are a great warrior who made    this far but due to heavy snow, you cannot go further."
+*E_CHAT		"Go back to Eura village, you could  be trapped by snow."
+*E_CHAT		"They say that the monsters in the   ice fields are much stronger than in the iron fields."

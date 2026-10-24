@@ -1,0 +1,8 @@
+//yura-guard2.npc
+
+*E_NAME		"Eura Guard"
+
+*E_CHAT		"I have orders to allow entry, only to those who are more than level 85"
+*E_CHAT         "Look at your armor that looks great, can i try on?"
+*E_CHAT         "There are strong monsters around this area, but many warriors have passed so you will have many company"
+*E_CHAT         "Please tell Allya in Ricarten that I miss her so much"

@@ -1,0 +1,40 @@
+*속성		NPC
+*모양파일	"char\npc\Packjjangpy\Packjjangpy.INI"
+//*레벨		100
+
+*이름		"Sheltom Peddler"
+*Name		"Sheltom Peddler"
+
+
+*무기판매 os101 os102 os103 os104 os105 os106 os107 os108 os109 os110 os111 os112 os113 os114 os115 os116 os117 bi110 bi111 bi185 bi516 bi518 bi160 bi161 bi136 bi137 bi138 bi162 bi163 bi164
+
+
+*방어구판매 bi263 bi264 bi265 bi266 bi267 bi268 pr503 pr506 pr509 pr512 pr515 bi525 bi269 bi270 bi296 bi297 pr501 pr502 pr504 pr505 pr507 pr508 pr510 pr511 pr513 pr514 se104 se101 se105
+
+
+//*잡화판매	
+os101 os102 os103 os104 os105 os106 os107 os108 os109 os110 
+os111 os112 os113 os114 os115 os116 os117 bi110 bi111 bi185 
+bi516 bi518 bi160 bi161
+
+//*연결파일	"name\Sheltom-Peddler"
+
+
+
+
+
+
+
+
+
+*연결파일	"name\Sheltom-Peddler.zhoon"
+
+
+
+
+
+
+
+
+
+

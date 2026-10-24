@@ -1,0 +1,34 @@
+//		아이템 정보		//
+
+
+*이름		"로맨틱 턱시도(30일)"
+*Name		"Romantic Tuxedo(30Days)"
+*코드		"CA518"
+
+
+//WEIGHT
+*무게		1
+
+//COST
+*가격		100000
+
+//ADD ABS
+*흡수력		10
+
+//ADD DEF
+*방어력		200
+
+//ADD HP
+*생명력추가	400
+
+//REGEN HP
+*생명력재생	4.0	4.0
+
+//REGEN MP
+*기력재생	4.0	4.0
+
+//REGEN SP
+*근력재생	4.0	4.0
+
+
+*연결파일        "name\CA518.zhoon"
