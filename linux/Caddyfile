@@ -20,6 +20,19 @@
 	@pack path *.pack
 	header @pack Content-Type application/octet-stream
 
+	# compress what browsers download: data_startup.pack 91 -> ~45 MB, game.wasm
+	# 5 -> ~1.2 MB. Caddy's default list leaves out octet-stream (the pack, data files).
+	# Without a Content-Length the loader shows "N MB" instead of a percentage.
+	encode zstd gzip {
+		match {
+			header Content-Type text/*
+			header Content-Type application/javascript*
+			header Content-Type text/javascript*
+			header Content-Type application/wasm
+			header Content-Type application/octet-stream
+		}
+	}
+
 	# never served: the git repository, dotfiles, the source/server folder and these
 	# settings. A handle of its own, listed first: handle blocks run before a bare
 	# respond would, and only the first matching handle runs.
