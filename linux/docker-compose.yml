@@ -1,0 +1,49 @@
+# Priston Tale in the browser on Linux:
+#   web     Caddy - serves the site and game data, HTTPS, proxies /ws.ashx
+#   server  server.exe under Wine (port 10007 stays inside Docker)
+#   bridge  WebSocket <-> TCP bridge, sharing server's network like ws.ashx shares the PC
+#
+# Start:  cd linux && cp .env.example .env && docker compose up -d --build
+services:
+  server:
+    build: ./server
+    # server.exe is 32-bit x86: needs an x86-64 host (Wine does not run it on ARM)
+    platform: linux/amd64
+    restart: unless-stopped
+    volumes:
+      - "../[project]/dist/server:/srv/server"
+    # server.exe needs time to save everyone when stopped
+    stop_grace_period: 2m
+    init: true
+
+  bridge:
+    build: ./bridge
+    restart: unless-stopped
+    network_mode: "service:server"
+    environment:
+      PT_BRIDGE_PORT: "8081"
+      PT_GAME_HOST: "127.0.0.1"
+      PT_GAME_PORTS: "${PT_GAME_PORTS:-10007}"
+    depends_on:
+      - server
+
+  web:
+    image: caddy:2.8.4
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      PT_SITE: "${PT_SITE:-:80}"
+    volumes:
+      - "./Caddyfile:/etc/caddy/Caddyfile:ro"
+      - "..:/srv/site:ro"
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - bridge
+
+volumes:
+  caddy_data:
+  caddy_config:

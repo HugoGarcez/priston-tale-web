@@ -43,3 +43,7 @@ Release/
 *.rar
 *.zip
 *.7z
+
+# --- Linux hosting (linux/) ---
+/linux/.env
+/linux/bridge/node_modules/

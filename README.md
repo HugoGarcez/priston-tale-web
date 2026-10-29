@@ -5,6 +5,8 @@ The whole game client runs in the browser (WebAssembly); the world runs in `serv
 
 **You only need Windows and its built-in web server (IIS).** No SQL, no database, nothing for players to install.
 
+**Linux server?** See [linux/README.md](linux/README.md): the same world with Docker, Caddy and Wine.
+
 ```
 Player's browser  <== https / wss ==>  IIS website (ws.ashx bridge)  <== 127.0.0.1:10007 ==>  server.exe
 ```

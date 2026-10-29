@@ -1,0 +1,36 @@
+# Caddy settings: the Linux replacement for IIS and web.config / data/web.config.
+# PT_SITE is the address: ":80" for plain HTTP (playing on the server itself via
+# http://localhost), or a domain name such as "play.example.com", for which Caddy
+# gets and renews an HTTPS certificate by itself.
+{$PT_SITE} {
+	# never served: the git repository, dotfiles, the source/server folder and these settings
+	@hidden path_regexp hidden ^/(\.|\[project\]|%5Bproject%5D|linux(/|$))
+	respond @hidden 404
+
+	# the game uses threads (SharedArrayBuffer): browsers allow them only on pages
+	# sent with these headers, and only over HTTPS (or http://localhost)
+	header {
+		Cross-Origin-Opener-Policy same-origin
+		Cross-Origin-Embedder-Policy require-corp
+		Cross-Origin-Resource-Policy same-origin
+	}
+
+	# game data changes rarely; the page and program change with updates
+	@data path /data/*
+	header @data Cache-Control "public, max-age=604800"
+	@notdata not path /data/*
+	header @notdata Cache-Control "no-cache"
+
+	@pack path *.pack
+	header @pack Content-Type application/octet-stream
+
+	# WebSocket bridge to server.exe (config.js serverUrl 'ws.ashx')
+	handle /ws.ashx {
+		reverse_proxy server:8081
+	}
+
+	handle {
+		root * /srv/site
+		file_server
+	}
+}

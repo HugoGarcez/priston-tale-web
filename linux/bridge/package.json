@@ -1,0 +1,13 @@
+{
+  "name": "priston-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WebSocket bridge between the browser game and server.exe (Linux replacement for ws.ashx)",
+  "main": "bridge.js",
+  "scripts": {
+    "start": "node bridge.js"
+  },
+  "dependencies": {
+    "ws": "8.18.0"
+  }
+}
