@@ -1,7 +1,7 @@
 # Priston Tale in the browser on Linux:
 #   web     Caddy - serves the site and game data, HTTPS, proxies /ws.ashx
 #   server  server.exe under Wine (port 10007 stays inside Docker)
-#   bridge  WebSocket <-> TCP bridge, sharing server's network like ws.ashx shares the PC
+#   bridge  WebSocket <-> TCP bridge to server:10007 (as ws.ashx to 127.0.0.1:10007)
 #
 # Start:  cd linux && cp .env.example .env && docker compose up -d --build
 services:
@@ -19,10 +19,11 @@ services:
   bridge:
     build: ./bridge
     restart: unless-stopped
-    network_mode: "service:server"
+    # its own network, not network_mode service:server: that one is left behind
+    # whenever the server container restarts, and the bridge loses server.exe
     environment:
       PT_BRIDGE_PORT: "8081"
-      PT_GAME_HOST: "127.0.0.1"
+      PT_GAME_HOST: "server"
       PT_GAME_PORTS: "${PT_GAME_PORTS:-10007}"
     depends_on:
       - server
@@ -36,6 +37,7 @@ services:
       - "443:443/udp"
     environment:
       PT_SITE: "${PT_SITE:-:80}"
+      PT_ALLOWED_IPS: "${PT_ALLOWED_IPS:-0.0.0.0/0 ::/0}"
     volumes:
       - "./caddy:/etc/caddy:ro"
       - "..:/srv/site:ro"

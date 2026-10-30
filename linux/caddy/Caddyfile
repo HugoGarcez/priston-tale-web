@@ -39,6 +39,13 @@
 		}
 	}
 
+	# PT_ALLOWED_IPS: who may connect (default everyone). Behind Cloudflare, its
+	# address ranges, so players can't skip it by going to the server's IP.
+	@blocked not remote_ip {$PT_ALLOWED_IPS}
+	handle @blocked {
+		abort
+	}
+
 	# never served: the git repository, dotfiles, the source/server folder and these
 	# settings. A handle of its own, listed first: handle blocks run before a bare
 	# respond would, and only the first matching handle runs.
@@ -49,7 +56,7 @@
 
 	# WebSocket bridge to server.exe (config.js serverUrl 'ws.ashx')
 	handle /ws.ashx {
-		reverse_proxy server:8081
+		reverse_proxy bridge:8081
 	}
 
 	handle {
