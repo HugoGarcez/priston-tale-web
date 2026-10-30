@@ -17,6 +17,12 @@
 	@notdata not path /data/*
 	header @notdata Cache-Control "no-cache"
 
+	# Behind Cloudflare: its servers near the players keep the big downloads, while
+	# browsers still check with every visit (Cache-Control above). Purge the
+	# Cloudflare cache after updating the game files. Ignored without Cloudflare.
+	@cdn path /data/* /data_startup.pack /data_manifest.txt /game.wasm /game.js
+	header @cdn Cloudflare-CDN-Cache-Control "max-age=86400"
+
 	@pack path *.pack
 	header @pack Content-Type application/octet-stream
 
