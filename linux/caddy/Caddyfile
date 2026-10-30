@@ -2,6 +2,7 @@
 # PT_SITE is the address: ":80" for plain HTTP (playing on the server itself via
 # http://localhost), or a domain name such as "play.example.com", for which Caddy
 # gets and renews an HTTPS certificate by itself.
+
 {$PT_SITE} {
 	# the game uses threads (SharedArrayBuffer): browsers allow them only on pages
 	# sent with these headers, and only over HTTPS (or http://localhost)
@@ -29,7 +30,9 @@
 	# compress what browsers download: data_startup.pack 91 -> ~45 MB, game.wasm
 	# 5 -> ~1.2 MB. Caddy's default list leaves out octet-stream (the pack, data files).
 	# Without a Content-Length the loader shows "N MB" instead of a percentage.
-	encode zstd gzip {
+	# not the WebSocket bridge: its game traffic is binary and goes through untouched
+	@compress not path /ws.ashx
+	encode @compress zstd gzip {
 		match {
 			header Content-Type text/*
 			header Content-Type application/javascript*
