@@ -37,7 +37,7 @@ services:
     environment:
       PT_SITE: "${PT_SITE:-:80}"
     volumes:
-      - "./Caddyfile:/etc/caddy/Caddyfile:ro"
+      - "./caddy:/etc/caddy:ro"
       - "..:/srv/site:ro"
       - caddy_data:/data
       - caddy_config:/config

@@ -8,7 +8,7 @@ Player's browser  <== https / wss ==>  Caddy (web)  ==>  bridge (/ws.ashx)  <== 
 
 | Windows | Linux (this folder) |
 |---|---|
-| IIS, `web.config`, `data/web.config` | Caddy, `Caddyfile` |
+| IIS, `web.config`, `data/web.config` | Caddy, `caddy/Caddyfile` |
 | `ws.ashx` (ASP.NET) | `bridge/bridge.js` (Node.js) |
 | `server.exe` | `server.exe` under 32-bit Wine with a virtual display (`server/`) |
 | win-acme certificates | Caddy gets and renews HTTPS certificates by itself |
@@ -58,4 +58,4 @@ Add `?debugnet` to the address to log every connection attempt under the game.
 | `/ws.ashx` shows 502 instead of "WebSocket connections only" | The bridge isn't running: `docker compose logs bridge`. |
 | HTTPS certificate fails | The domain must point at this server and ports 80/443 must be open. `docker compose logs web`. |
 
-Testing without Docker: `node bridge/bridge.js` (after `npm ci` in `bridge/`) plus any web server that sends the headers in `Caddyfile` and proxies `/ws.ashx` to port 8081.
+Testing without Docker: `node bridge/bridge.js` (after `npm ci` in `bridge/`) plus any web server that sends the headers in `caddy/Caddyfile` and proxies `/ws.ashx` to port 8081.
