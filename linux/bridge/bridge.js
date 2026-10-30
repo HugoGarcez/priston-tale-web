@@ -30,18 +30,28 @@ const wss = new WebSocketServer( { noServer: true, perMessageDeflate: false } );
 httpServer.on( 'upgrade', ( req, socket, head ) => {
 	const url = new URL( req.url, 'http://bridge' );
 	const port = parseInt( url.searchParams.get( 'port' ), 10 );
+	// the player's address: Cloudflare and Caddy put it in these headers
+	const who = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || socket.remoteAddress;
 	if ( !GAME_PORTS.has( port ) ) {
+		console.log( `[bridge] ${who} refused: port ${url.searchParams.get( 'port' )} is not in PT_GAME_PORTS` );
 		socket.end( 'HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n' );
 		return;
 	}
-	wss.handleUpgrade( req, socket, head, ws => bridge( ws, port ) );
+	wss.handleUpgrade( req, socket, head, ws => bridge( ws, port, who ) );
 } );
 
-function bridge( ws, port ) {
+function bridge( ws, port, who ) {
 	const tcp = net.connect( { host: GAME_HOST, port: port } );
 	tcp.setNoDelay( true );
-	let connected = false;
+	let connected = false, up = 0, down = 0, closed = false;
+	const t0 = Date.now();
 	const pending = [];			// browser bytes that came before the TCP connection was up
+	const done = why => {
+		if ( closed ) return;
+		closed = true;
+		console.log( `[bridge] ${who} port ${port} closed (${why}) after ${( ( Date.now() - t0 ) / 1000 ).toFixed( 1 )}s, browser->server ${up} B, server->browser ${down} B` );
+	};
+	console.log( `[bridge] ${who} connecting to port ${port}` );
 
 	tcp.on( 'connect', () => {
 		connected = true;
@@ -49,6 +59,7 @@ function bridge( ws, port ) {
 		pending.length = 0;
 	} );
 	tcp.on( 'data', data => {
+		down += data.length;
 		if ( ws.readyState!==ws.OPEN ) return;
 		ws.send( data, { binary: true } );
 		if ( ws.bufferedAmount>HIGH_WATER ) {
@@ -58,20 +69,22 @@ function bridge( ws, port ) {
 			}, 20 );
 		}
 	} );
-	tcp.on( 'error', () => {
+	tcp.on( 'error', err => {
 		// server.exe not running: the game shows that it cannot connect
-		if ( !connected ) ws.close( 1001, 'game server not running' );
+		if ( !connected ) { done( 'server.exe unreachable: ' + err.code ); ws.close( 1001, 'game server not running' ); }
 	} );
 	tcp.on( 'close', () => {
+		done( 'server.exe closed it' );
 		if ( ws.readyState===ws.OPEN ) ws.close( 1000, '' );
 	} );
 
 	ws.on( 'message', data => {
+		up += data.length;
 		if ( connected ) tcp.write( data );
 		else pending.push( data );
 	} );
-	ws.on( 'close', () => tcp.destroy() );
-	ws.on( 'error', () => tcp.destroy() );
+	ws.on( 'close', code => { done( 'browser closed it, code ' + code ); tcp.destroy(); } );
+	ws.on( 'error', err => { done( 'browser error: ' + err.message ); tcp.destroy(); } );
 }
 
 httpServer.listen( LISTEN_PORT, () => {
